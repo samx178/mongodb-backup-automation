@@ -1,0 +1,31 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# MongoDB backups
+backups/
+*.bson
+*.dump
+*.archive
+*.tar.gz
+
+# Logs
+*.log
+logs/
+
+# Private keys
+*.pem
+*.key
+
+# Temporary files
+*.tmp
+*.partial
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
