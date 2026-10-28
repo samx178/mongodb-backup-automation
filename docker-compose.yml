@@ -1,0 +1,17 @@
+services:
+  kali:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kali-mongodb-backup
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - backup_data:/opt/mongodb-backups
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  backup_data:
+    driver: local

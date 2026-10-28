@@ -1,0 +1,50 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Version control
+.git/
+.gitignore
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Environment files and secrets (keep example configs)
+.env
+.env.*
+!.env.example
+!config/backup.env.example
+
+# Local backups and archives
+backups/
+*.bson
+*.dump
+*.archive
+*.tar.gz
+*.gz
+
+# Logs
+logs/
+*.log
+
+# Sensitive credentials & keys
+*.pem
+*.key
+
+# Editor and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp
+*.partial
