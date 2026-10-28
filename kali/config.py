@@ -17,24 +17,47 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    project_name: str = Field(min_length=1, validation_alias="PROJECT_NAME")
+    # Project identification
+    project_name: str = Field(
+        min_length=1,
+        validation_alias="PROJECT_NAME",
+    )
+
+    # MongoDB connection
     mongodb_uri: SecretStr = Field(
         min_length=1,
         validation_alias="MONGODB_URI",
     )
 
+    # Local backup settings
     backup_root: Path = Field(
         default=Path("/opt/mongodb-backups"),
         validation_alias="BACKUP_ROOT",
     )
-    retention_days: int = Field(default=3, ge=1, validation_alias="RETENTION_DAYS")
+    retention_days: int = Field(
+        default=3,
+        ge=1,
+        validation_alias="RETENTION_DAYS",
+    )
+
+    # Backup schedule
     backup_interval_hours: int = Field(
         default=6,
         ge=1,
         validation_alias="BACKUP_INTERVAL_HOURS",
     )
 
-    s3_bucket: str = Field(default="", validation_alias="S3_BUCKET")
+    # Backup mode: database or cluster
+    backup_mode: str = Field(
+        default="database",
+        validation_alias="BACKUP_MODE",
+    )
+
+    # AWS S3 settings
+    s3_bucket: str = Field(
+        default="",
+        validation_alias="S3_BUCKET",
+    )
     s3_prefix: str = Field(
         default="mongodb-backups",
         validation_alias="S3_PREFIX",
@@ -44,8 +67,12 @@ class Settings(BaseSettings):
         ge=1,
         validation_alias="S3_RETENTION_DAYS",
     )
-    aws_region: str = Field(default="ap-south-1", validation_alias="AWS_REGION")
+    aws_region: str = Field(
+        default="ap-south-1",
+        validation_alias="AWS_REGION",
+    )
 
+    # Email notification settings
     email_notifications_enabled: bool = Field(
         default=False,
         validation_alias="EMAIL_NOTIFICATIONS_ENABLED",
@@ -68,17 +95,32 @@ class Settings(BaseSettings):
     @field_validator("mongodb_uri")
     @classmethod
     def validate_mongodb_uri(cls, value: SecretStr) -> SecretStr:
-        """Accept standard MongoDB connection URI schemes."""
+        """Validate the MongoDB connection URI scheme."""
         uri = value.get_secret_value().strip()
+
         if not uri.startswith(("mongodb://", "mongodb+srv://")):
             raise ValueError(
                 "MONGODB_URI must start with mongodb:// or mongodb+srv://"
             )
+
         return SecretStr(uri)
+
+    @field_validator("backup_mode")
+    @classmethod
+    def validate_backup_mode(cls, value: str) -> str:
+        """Allow only supported backup modes."""
+        value = value.strip().lower()
+
+        if value not in {"database", "cluster"}:
+            raise ValueError(
+                "BACKUP_MODE must be either 'database' or 'cluster'"
+            )
+
+        return value
 
     @property
     def s3_enabled(self) -> bool:
-        """Return whether remote S3 backups are configured."""
+        """Return whether S3 uploads are configured."""
         return bool(self.s3_bucket)
 
 
